@@ -16,6 +16,11 @@ fn main() {
 }
 
 #[get("/")]
+fn hello_world() -> String {
+    format!("hello world")
+}
+
+#[get("/")]
 fn get_movies() -> Json<Option<Vec<Movie>>> {
     Json(db::read_movies())
 }
@@ -26,5 +31,7 @@ fn get_movie(id: u8) -> Json<Option<Movie>> {
 }
 
 fn rocket() -> Rocket {
-    rocket::ignite().mount("/movies", routes![get_movies, get_movie])
+    rocket::ignite()
+        .mount("/", routes!(hello_world))
+        .mount("/movies", routes![get_movies, get_movie])
 }
