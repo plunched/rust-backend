@@ -16,15 +16,11 @@ pub fn read_movies() -> Option<Vec<Movie>> {
     }
 }
 
-fn read_movie(id: u8) -> Option<Movie> {
+pub fn read_movie(id: u8) -> Option<Movie> {
     match _movies() {
         Ok(movies) => {
             let res = movies.get(id as usize);
-
-            match res {
-                Some(x) => Some(movies[x].clone()),
-                None => None,
-            }
+            res.cloned()
         }
         Err(_) => None,
     }

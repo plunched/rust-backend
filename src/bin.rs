@@ -6,6 +6,7 @@ use rocket_contrib::json::Json;
 
 use lib::db;
 use lib::model::Movie;
+use rocket::Rocket;
 
 #[macro_use]
 extern crate rocket;
@@ -20,13 +21,9 @@ fn get_movies() -> Json<Option<Vec<Movie>>> {
 }
 
 #[get("/<id>")]
-fn get_movie(id: Index<u8>) -> Json<Option<Movie>> {
-    Json(db::read_movie(
-        id,
-    ))
+fn get_movie(id: u8) -> Json<Option<Movie>> {
+    Json(db::read_movie(id))
 }
-
-
 
 fn rocket() -> Rocket {
     rocket::ignite().mount("/movies", routes![get_movies, get_movie])
