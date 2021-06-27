@@ -1,5 +1,5 @@
 use crate::model::Movie;
-use std::{fs, u8};
+use std::fs;
 
 static MOVIES_DB: &str = "data/movies.json";
 
@@ -9,6 +9,11 @@ fn _movies() -> Result<Vec<Movie>, serde_json::Error> {
     movies
 }
 
+fn _write_movies(movies: Vec<Movie>) {
+    let data = serde_json::to_string(&movies).expect("couldn't convert the json into a string!");
+    fs::write(MOVIES_DB, data).expect("couldn't write to the json database!")
+}
+
 pub fn read_movies() -> Option<Vec<Movie>> {
     match _movies() {
         Ok(movies) => Some(movies),
@@ -16,16 +21,34 @@ pub fn read_movies() -> Option<Vec<Movie>> {
     }
 }
 
-fn read_movie(id: u8) -> Option<Movie> {
-   match _movies() {
-       Ok(movies) => {
-           let res = movies.get(id as usize);
+pub fn read_movie(id: u8) -> Option<Movie> {
+    match _movies() {
+        Ok(movies) => {
+            let res = movies.get(id as usize);
+            res.cloned()
+        }
+        Err(_) => None,
+    }
+}
 
-           match res {
-               Some(x) => Some(movies[x].clone()),
-               None => None,
-           }
-       }
-       Err(_) => None,
-   }
+pub fn create_movie(movie: Movie) -> Option<Movie> {
+    match _movies() {
+        Ok(mut movies) => {
+            movies.push(movie.clone());
+            _write_movies(movies);
+            Some(movie)
+        }
+        Err(_) => None,
+    }
+}
+
+pub fn delete_movie(id: u8) -> bool {
+    match _movies() {
+        Ok(mut movies) => {
+            movies.remove(id as usize);
+            _write_movies(movies);
+            true
+        }
+        Err(_) => false,
+    }
 }
